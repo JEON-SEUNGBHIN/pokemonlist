@@ -35,13 +35,13 @@ export default async function DetailPage({
 
   return (
     <div className="w-full text-center">
-      <div className="w-1/2 m-auto">
-        <div className="p-4 border">
+      <div className="max-w-4xl mx-auto p-4">
+        <div className="p-4 border mb-4">
           <h1 className="text-xl font-semibold">{pokemon.korean_name}</h1>
           <p>No. {pokemonId}</p>
         </div>
         <img
-          className="m-auto"
+          className="mx-auto mb-4"
           src={pokemon.sprites.front_default}
           alt={pokemon.korean_name}
         />
@@ -74,9 +74,9 @@ export default async function DetailPage({
               ))}
             </ul>
           </div>
-          <div className="text-center">
+          <div className="text-center w-full">
             <h2 className="mt-4 text-lg font-semibold">기술:</h2>
-            <ul className="flex flex-wrap mt-4 max-h-40 overflow-y-auto border">
+            <ul className="flex flex-wrap justify-center mt-4 max-h-40 overflow-y-auto border p-2">
               {pokemon.moves.map((move, index) => (
                 <li
                   key={index}
@@ -88,7 +88,12 @@ export default async function DetailPage({
             </ul>
           </div>
         </div>
-
+        <Link
+          href="/"
+          className="block mt-8 p-3 bg-cyan-500 text-white border rounded mx-auto w-32"
+        >
+          뒤로 가기
+        </Link>
       </div>
     </div>
   );
