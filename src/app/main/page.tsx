@@ -28,12 +28,13 @@ const MainPage = () => {
   }
 
   return (
-    <div>
-      <ul>
+    <div className="flex flex-col">
+      <ul className="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 m-6">
         {pokemonList.map((pokemon) => (
-          <li key={pokemon.id}>
+          <li key={pokemon.id} className="m-2 p-2 border rounded-lg cursor-pointer">
             <img src={pokemon.sprites.front_default} alt={pokemon.name} />
-            {pokemon.id}. {pokemon.korean_name}
+            <p className="font-semibold">{pokemon.korean_name}</p>
+            <p>도감 번호: {pokemon.id}</p>
           </li>
         ))}
       </ul>

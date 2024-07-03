@@ -3,9 +3,9 @@ import React from "react";
 
 const HeaderPage = () => {
   return (
-    <header>
-      <nav>
-        <Link href="/">포켓몬 도감</Link>
+    <header className="w-full my-8 text-center">
+      <nav className="m-auto">
+        <Link href="/" className="text-3xl font-bold">포켓몬 도감</Link>
       </nav>
     </header>
   );
