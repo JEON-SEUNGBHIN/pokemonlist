@@ -1,5 +1,3 @@
-//규칙: (레이아웃, 크기, 배경 색상, 타이포그래피(ex: text, font...), 폰트 색상, 기타)
-
 import type { Config } from "tailwindcss";
 
 const config: Config = {
