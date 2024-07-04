@@ -32,10 +32,6 @@ const MainPage = () => {
   }, [isLoading, hasMore, offset]);
 
   useEffect(() => {
-    fetchPokemon(); // 컴포넌트가 처음 마운트될 때 데이터 불러오기
-  }, []);
-
-  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && hasMore) {
