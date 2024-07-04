@@ -53,8 +53,8 @@ const MainPage = () => {
   }
 
   return (
-    <div className="flex flex-col">
-      <ul className="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 m-6">
+    <div className="w-full flex flex-col">
+      <ul className="w-3/4 grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 m-auto">
         {pokemonList.map((pokemon) => (
           <Link key={pokemon.id} href={`/main/detail/${pokemon.id}`}>
             <li className="m-2 p-2 border rounded-lg cursor-pointer">
