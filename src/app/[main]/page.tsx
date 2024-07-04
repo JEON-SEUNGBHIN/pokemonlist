@@ -5,24 +5,25 @@ import Link from "next/link";
 import { useEffect, useState, useRef, useCallback } from "react";
 
 const MainPage = () => {
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]); // 포켓몬 데이터를 저장하는 상태 변수
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태를 나타내는 상태 변수
+  const [offset, setOffset] = useState(0); // 현재 offset을 저장하는 상태 변수
+  const [hasMore, setHasMore] = useState(true); // 더 불러올 데이터가 있는지 여부를 나타내는 상태 변수
+  const loadMoreRef = useRef<HTMLDivElement>(null); // 무한 스크롤을 위해 참조할 요소
 
+  // 포켓몬 데이터를 가져오는 함수
   const fetchPokemon = useCallback(async () => {
-    if (!hasMore || isLoading) return;
+    if (!hasMore || isLoading) return; // 더 불러올 데이터가 없거나 이미 로딩 중이면 함수 종료
 
-    setIsLoading(true);
+    setIsLoading(true); // 로딩 상태로 변경
     try {
-      const response = await fetch(`/api/pokemons?offset=${offset}&limit=20`);
-      const data = await response.json();
-      setPokemonList((prevList) => [...prevList, ...data]);
-      if (data.length < 20) {
-        setHasMore(false); // 더 이상 데이터가 없는 경우
+      const response = await fetch(`/api/pokemons?offset=${offset}&limit=20`); // API 요청
+      const data = await response.json(); // 응답 데이터를 JSON으로 파싱
+      setPokemonList((prevList) => [...prevList, ...data]); // 기존 데이터에 새로운 데이터 추가
+      if (data.length < 20) { 
+        setHasMore(false); // 받아온 데이터가 20개 미만이면 더 이상 데이터가 없음을 설정
       }
-      setOffset((prevOffset) => prevOffset + 20); // offset 업데이트는 여기서 처리
+      setOffset((prevOffset) => prevOffset + 20); // offset을 20만큼 증가
     } catch (error) {
       console.error("에러 발생", error);
     } finally {
@@ -31,25 +32,25 @@ const MainPage = () => {
   }, [isLoading, hasMore, offset]);
 
   useEffect(() => {
-    fetchPokemon();
+    fetchPokemon(); // 컴포넌트가 처음 마운트될 때 데이터 불러오기
   }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isLoading && hasMore) {
-          fetchPokemon(); // IntersectionObserver에서 새로운 데이터를 요청
+          fetchPokemon(); // 하단 요소가 화면에 나타나면 새로운 데이터를 요청
         }
       },
       { threshold: 1.0 }
     );
 
-    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current); // 하단 요소를 관찰
 
     return () => {
-      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current); // 클린업 함수에서 관찰 해제
     };
-  }, [isLoading, hasMore]);
+  }, [isLoading, hasMore, fetchPokemon]);
 
   if (pokemonList.length === 0 && isLoading) {
     return <div>Loading...</div>; // 초기 로딩 상태 표시
@@ -68,7 +69,7 @@ const MainPage = () => {
           </Link>
         ))}
       </ul>
-      <div ref={loadMoreRef} className="h-10"></div>
+      <div ref={loadMoreRef} className="h-10"></div> {/* 무한 스크롤 트리거 요소 */}
       {isLoading && <div>Loading more...</div>}
     </div>
   );
