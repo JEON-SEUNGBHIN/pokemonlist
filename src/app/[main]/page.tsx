@@ -2,30 +2,57 @@
 
 import { Pokemon } from "@/types/pokemon";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 const MainPage = () => {
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const fetchPokemon = useCallback(async () => {
+    if (!hasMore || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/pokemons?offset=${offset}&limit=20`);
+      const data = await response.json();
+      setPokemonList((prevList) => [...prevList, ...data]);
+      if (data.length < 20) {
+        setHasMore(false); // 더 이상 데이터가 없는 경우
+      }
+      setOffset((prevOffset) => prevOffset + 20); // offset 업데이트는 여기서 처리
+    } catch (error) {
+      console.error("에러 발생", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, hasMore, offset]);
 
   useEffect(() => {
-    const fetchPokemon = async () => {
-      try {
-        const response = await fetch("/api/pokemons");
-        const data = await response.json();
-        setPokemonList(data);
-      } catch (error) {
-        console.error("에러 발생", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchPokemon();
   }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+          fetchPokemon(); // IntersectionObserver에서 새로운 데이터를 요청
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [isLoading, hasMore]);
+
+  if (pokemonList.length === 0 && isLoading) {
+    return <div>Loading...</div>; // 초기 로딩 상태 표시
   }
 
   return (
@@ -41,6 +68,8 @@ const MainPage = () => {
           </Link>
         ))}
       </ul>
+      <div ref={loadMoreRef} className="h-10"></div>
+      {isLoading && <div>Loading more...</div>}
     </div>
   );
 };
