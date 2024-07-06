@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
+interface ErrorWithDigest extends Error {
+  digest?: string;
+}
+
+function hasDigestProperty(error: any): error is ErrorWithDigest {
+  return typeof error === 'object' && 'digest' in error;
+}
+
 export const GET = async (
   request: Request,
   { params }: { params: { id: string } },
@@ -64,6 +72,12 @@ export const GET = async (
     return NextResponse.json(pokemonData);
   } catch (error) {
     console.error("Error fetching Pokemon data:", error);
+
+    // 타입 가드를 사용하여 error 객체에 digest 속성이 있는지 확인
+    if (hasDigestProperty(error)) {
+      console.error("Error digest:", error.digest);
+    }
+
     return NextResponse.json({ error: "Failed to fetch data" });
   }
 };
